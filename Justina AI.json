@@ -1,0 +1,1252 @@
+{
+  "name": "Justina AI",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waha",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c7de4960-d80a-4257-be4c-152187bc318a",
+      "name": "Webhook",
+      "webhookId": "67186209-46ad-4f13-b9ab-cc3e1c308272"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e5f3bc85-0979-4117-a6b9-d1a01961d0be",
+              "name": "event",
+              "value": "={{ $json.body.event }}",
+              "type": "string"
+            },
+            {
+              "id": "dea093c2-b451-4306-9d91-2edbac579fae",
+              "name": "session",
+              "value": "={{ $json.body.session }}",
+              "type": "string"
+            },
+            {
+              "id": "359afd9e-36b4-4220-b5db-abe61bca06c8",
+              "name": "payload_id",
+              "value": "={{ $json.body.payload.id }}",
+              "type": "string"
+            },
+            {
+              "id": "022cc1ec-d0d4-40ec-accc-40b426f40780",
+              "name": "from",
+              "value": "={{ $json.body.payload.from }}",
+              "type": "string"
+            },
+            {
+              "id": "90c2e6e3-08cd-42ba-93da-d0d70cc1d71c",
+              "name": "source",
+              "value": "={{ $json.body.payload.source }}",
+              "type": "string"
+            },
+            {
+              "id": "b328b41a-9537-493d-9aa9-1cae3defbd7c",
+              "name": "body",
+              "value": "={{ $json.body.payload.body }}",
+              "type": "string"
+            },
+            {
+              "id": "54e2bf5f-9327-460b-a934-da5cd2c9c1f1",
+              "name": "hasMedia",
+              "value": "={{ $json.body.payload.hasMedia }}",
+              "type": "string"
+            },
+            {
+              "id": "377e5d04-53e6-4d0c-97c1-e3e2970a3527",
+              "name": "type",
+              "value": "={{ $json.body.payload._data.type }}",
+              "type": "string"
+            },
+            {
+              "id": "a2b12daa-d7d7-4cc4-bc24-8f2327118c7e",
+              "name": "name",
+              "value": "={{ $json.body.payload._data.notifyName }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1e76ef3c-cb7e-466e-a769-a062e6bb9ce2",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b72afc4b-1d9b-4f9a-8254-f98dce5b17c2",
+              "leftValue": "={{ $json.source }}",
+              "rightValue": "api",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        -208
+      ],
+      "id": "7f70c3ce-f8f3-4a79-a131-a074bbf7a4f7",
+      "name": "Ignorar api"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "97b3887c-8728-4c55-80bc-9eca668d3823",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "@g.us",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        656,
+        -208
+      ],
+      "id": "9ea4c6bc-90f0-4f4a-a773-90bb536fcac6",
+      "name": "Ignorar grupos"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "My name is Justina, an AI Chatbot dedicated to helping the people of Bahia with accessibility to all forms of justice.\n\nRole\nArbitration Judge and Small Claims Conciliator\n\nContext of Service\nTo act as a first-instance guidance counselor focused entirely on dejudicialization and conflict resolution through extrajudicial means (conciliation and mediation)\n\nThe primary goal is to offer the fastest and most accessible path to resolve disputes\n\nRules\nAuthorized Sources: CNJ DataJUD and TJBA\n\nJurisprudence Preference Rule: Prioritize seeking the legal basis (Ementa Enunciado) from TJBA (Tribunal de Justiça da Bahia)\n\nFallback: Only if no relevant TJBA precedent is found search in CNJ or DataJUD (Brazil)\n\nTools\nUse the Google Search tool to:\n\nSearch for the jurisprudence basis\n\nFind relevant regulatory bodies and conciliation platforms (e.g. PROCON Consumidor.gov.br ANATEL ANS)\n\nSearch for pre-judgment resolution apps like queixa cidadã in Brazil\n\nRestrictions\nOutput Language: Only in Portuguese\n\nOutput Format: A single clear and direct text message formatted for reading on messaging apps (WhatsApp)\n\nDO NOT generate JSON or formal legal rulings\n\nDO NOT use punctuation when skipping lines (blank spaces)\n\nDO NOT use bolding\n\nBehavior\nMaintain the most accessible language possible throughout the content\n\nFully adhere to the principles of the National Judicial Pact for Simple Language\n\nBe empathetic guiding and objective\n\nProcedure\nAnalyze the Situation: Extract the central legal issue (the \"Ponto Controvertido\") from the user's input\n\nLegal Search: Execute the jurisprudence search following the Preference Rule (TJBA CNJ DataJUD)\n\nAction Guide: Execute the search for relevant regulatory bodies and conciliation platforms (including the queixa cidadã app in the Brazilian context)\n\nAssemble Output: Structure the final response in Portuguese following the Examples structure\n\nExamples\nStart with a simple summary of the problem\n\nSearch for apps like queixa cidadã in Brazil for pre-judgment resolutions\n\nHighlight the RECOMMENDED NEXT STEP (Conciliation first!)\n\nList the relevant regulatory bodies/platforms and their links/contacts\n\nConclude with a very simple summary of the legal rule (Regra da Justiça) found in the jurisprudence\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1056,
+        32
+      ],
+      "id": "b6b0995d-8a68-4bfd-a720-f9ed92a5e72e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        -160
+      ],
+      "id": "e247c9cb-db2e-41d4-87c7-7fbe0feb44d3",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YWXLgGS7lBz7sM4x",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Dados').item.json.session }} {{ $('Dados').item.json.from }} chats",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        -160
+      ],
+      "id": "e01b99d9-24df-4e43-9644-4c0ed923fdbd",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "xfnx2j4EafWX0AZb",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Seen",
+        "session": "={{ $('Dados').item.json.session }}",
+        "chatId": "={{ $('Dados').item.json.from }}",
+        "messageId": "={{ $('Dados').item.json.payload_id }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1408,
+        32
+      ],
+      "id": "6a002be5-7e1b-4893-8397-9a18132b9b9f",
+      "name": "Send Seen",
+      "credentials": {
+        "wahaApi": {
+          "id": "cV4TZoAsuR7mWGz7",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1824,
+        32
+      ],
+      "id": "29b4e448-4c4d-41e4-8d09-bef0ccba6997",
+      "name": "Wait",
+      "webhookId": "0b4c94e7-1609-48a8-97fa-f45826e6a837"
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Send Text",
+        "session": "={{ $('Dados').item.json.session }}",
+        "chatId": "={{ $('Dados').item.json.from }}",
+        "reply_to": "=",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        2032,
+        32
+      ],
+      "id": "26d87736-fa5d-4755-9613-b21cc44e66d7",
+      "name": "Send a text message",
+      "credentials": {
+        "wahaApi": {
+          "id": "cV4TZoAsuR7mWGz7",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Chatting",
+        "operation": "Start Typing",
+        "session": "={{ $('Dados').item.json.session }}",
+        "chatId": "={{ $('Dados').item.json.from }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-waha.WAHA",
+      "typeVersion": 202411,
+      "position": [
+        1616,
+        32
+      ],
+      "id": "4581a709-e593-4dfe-93f6-df82107c9942",
+      "name": "Start Typing",
+      "credentials": {
+        "wahaApi": {
+          "id": "cV4TZoAsuR7mWGz7",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "759708ba-d407-4bf2-b6a6-ab68b5e70ce5",
+              "leftValue": "={{ $json.hasMedia }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        96
+      ],
+      "id": "55afa603-6dfa-4f37-9afe-be4617970e1f",
+      "name": "Tem mídia"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c745925b-4c2b-4a57-9855-467921c59bd1",
+              "name": "message",
+              "value": "={{ $('Dados').item.json.body }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        752,
+        80
+      ],
+      "id": "209234f1-f375-41b2-81b5-169b4294e6fe",
+      "name": "Set text message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dd319cff-330c-4427-8c67-0613a540f288",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        928,
+        336
+      ],
+      "id": "d56a3801-44d2-4e52-96c0-0c0091d1d915",
+      "name": "Message"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "32805116-50fc-44bc-9075-2d61a40c5d46",
+              "name": "url",
+              "value": "={{ $('Webhook').item.json.body.payload.media.url }}",
+              "type": "string"
+            },
+            {
+              "id": "c99bc3ab-6616-4734-9dbd-63983ce92f92",
+              "name": "mimeType",
+              "value": "={{ $('Webhook').item.json.body.payload.media.mimetype }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        336
+      ],
+      "id": "8ecd8445-a656-484f-8466-98cd11634a08",
+      "name": "Dados da mídia"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "audio/ogg; codecs=opus",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "4acf9971-70af-4b9a-be8b-2c14c0b3f655"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8fe60bd6-517a-40a2-941e-05b6185ecef2",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "image",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        112,
+        448
+      ],
+      "id": "25695394-b71a-4686-806c-1d6a0418a0f5",
+      "name": "Tipo de mídia"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wahaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        336
+      ],
+      "id": "d5d71a4f-3e07-42ee-b5d0-456ff14d2592",
+      "name": "Baixar aúdio",
+      "credentials": {
+        "wahaApi": {
+          "id": "cV4TZoAsuR7mWGz7",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        336
+      ],
+      "id": "ebca28e5-321d-42f4-800c-de9d2b96989f",
+      "name": "Transcribe a recording",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YWXLgGS7lBz7sM4x",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d95a11e8-a91e-4009-bcd9-bdbc7eb54dcf",
+              "name": "message",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        336
+      ],
+      "id": "ce969593-9113-431d-a8f9-a22206b4efe1",
+      "name": "Set Audio Message"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wahaApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        544
+      ],
+      "id": "94957a5d-eb17-477c-8d49-665ad585def2",
+      "name": "Baixar imagem",
+      "credentials": {
+        "wahaApi": {
+          "id": "cV4TZoAsuR7mWGz7",
+          "name": "WAHA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Analise a imagem e dê detalhes do que tem nela.\n\nO usuário que enviou a imagem disse junto:   {{ $('Dados').item.json.body || \"Não disse nada.\" }}",
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        544
+      ],
+      "id": "8850da51-866b-4bb5-ae72-fc17ec688d0e",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "YWXLgGS7lBz7sM4x",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18096f03-977a-4331-80db-be06a2ef83b9",
+              "name": "message",
+              "value": "=O usuário enviou uma imagem, descrição da imagem:  \n\n{{ $json.content.parts[0].text }}\n\nJunto da imagem ele disse: {{ $('Dados').item.json.body || \"Não disse nada.\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        544
+      ],
+      "id": "9f0ae23e-d978-4af6-8790-79b5ef7646c3",
+      "name": "Set Image Message"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "documentId": {
+          "__rl": true,
+          "value": "1nrcGrmedD0lJmOJOkaYoLoQW4JaIlixFIQ7pbQdz3pM",
+          "mode": "list",
+          "cachedResultName": "Informações para Análise",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nrcGrmedD0lJmOJOkaYoLoQW4JaIlixFIQ7pbQdz3pM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1nrcGrmedD0lJmOJOkaYoLoQW4JaIlixFIQ7pbQdz3pM/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Nome",
+              "lookupValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('values0_Value', `O nome da pessoa sendo atendida`, 'string') }}"
+            },
+            {
+              "lookupColumn": "Telefone",
+              "lookupValue": "={{ $('Dados').item.json.from.split('@')[0] }}"
+            },
+            {
+              "lookupColumn": "Input",
+              "lookupValue": "={{ $('Dados').item.json.body ||  $('Set text message').item.json.message}}"
+            },
+            {
+              "lookupColumn": "Data",
+              "lookupValue": "={{ $now.format('dd/MM/yyyy HH:mm') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        1136,
+        256
+      ],
+      "id": "c02b45d9-d01b-4541-9afe-388aa27cda5a",
+      "name": "Preencher planilha de análise",
+      "credentials": {
+        "googleApi": {
+          "id": "DlJSE6IriKTXeW78",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        288
+      ],
+      "id": "ca8d1258-25ef-4630-b9a9-5fbdba23b729",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1sE9iQErcOwkcg-wFn_DbV0NTwgNyX8g9vGe7LZrZOlo",
+          "mode": "list",
+          "cachedResultName": "Base analisada previamente",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sE9iQErcOwkcg-wFn_DbV0NTwgNyX8g9vGe7LZrZOlo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sE9iQErcOwkcg-wFn_DbV0NTwgNyX8g9vGe7LZrZOlo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Caso Comum (Pequenas Causas)",
+              "displayName": "Caso Comum (Pequenas Causas)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Solução Pré-Processual Mais Comum (Preferencial)",
+              "displayName": "Solução Pré-Processual Mais Comum (Preferencial)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Detalhes da Solução",
+              "displayName": "Detalhes da Solução",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        -320
+      ],
+      "id": "cb188a54-679d-4a90-991e-0354d55e1ce2",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleApi": {
+          "id": "DlJSE6IriKTXeW78",
+          "name": "Google Service Account account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "hackaton-n8n.6dihgy.easypanel.host",
+            "user-agent": "WAHA/2025.9.8",
+            "content-length": "3167",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "172.18.0.1",
+            "x-forwarded-host": "hackaton-n8n.6dihgy.easypanel.host",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "7f5107d3ccf0",
+            "x-real-ip": "172.18.0.1",
+            "x-webhook-request-id": "01K7ANX2X8HBRBWE6TA6TE95W4",
+            "x-webhook-timestamp": "1760221367208"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "id": "evt_01k7anx2x7amnd70crtk4c9vcn",
+            "timestamp": 1760221367208,
+            "event": "message.any",
+            "session": "default",
+            "metadata": {},
+            "me": {
+              "id": "557192124313@c.us",
+              "pushName": "Justina"
+            },
+            "payload": {
+              "id": "false_557188904263@c.us_AC5574D88AC151192DDC37F963EE0826",
+              "timestamp": 1760221367,
+              "from": "557188904263@c.us",
+              "fromMe": false,
+              "source": "app",
+              "to": "557192124313@c.us",
+              "body": "consegue me ajudar com um problema de inundação na cidade?",
+              "hasMedia": false,
+              "media": null,
+              "ack": 1,
+              "ackName": "SERVER",
+              "vCards": [],
+              "_data": {
+                "id": {
+                  "fromMe": false,
+                  "remote": "557188904263@c.us",
+                  "id": "AC5574D88AC151192DDC37F963EE0826",
+                  "_serialized": "false_557188904263@c.us_AC5574D88AC151192DDC37F963EE0826"
+                },
+                "viewed": false,
+                "body": "consegue me ajudar com um problema de inundação na cidade?",
+                "type": "chat",
+                "t": 1760221367,
+                "clientReceivedTsMillis": 1760221366171,
+                "notifyName": "Rafael Brito",
+                "from": "557188904263@c.us",
+                "to": "557192124313@c.us",
+                "ack": 1,
+                "invis": false,
+                "isNewMsg": true,
+                "star": false,
+                "kicNotified": false,
+                "recvFresh": true,
+                "isFromTemplate": false,
+                "pollInvalidated": false,
+                "isSentCagPollCreation": false,
+                "latestEditMsgKey": null,
+                "latestEditSenderTimestampMs": null,
+                "mentionedJidList": [],
+                "groupMentions": [],
+                "isEventCanceled": false,
+                "eventInvalidated": false,
+                "isVcardOverMmsDocument": false,
+                "isForwarded": false,
+                "isQuestion": false,
+                "questionReplyQuotedMessage": null,
+                "questionResponsesCount": 0,
+                "readQuestionResponsesCount": 0,
+                "labels": [],
+                "hasReaction": false,
+                "viewMode": "VISIBLE",
+                "messageSecret": {
+                  "0": 247,
+                  "1": 237,
+                  "2": 103,
+                  "3": 194,
+                  "4": 89,
+                  "5": 122,
+                  "6": 248,
+                  "7": 95,
+                  "8": 211,
+                  "9": 167,
+                  "10": 92,
+                  "11": 246,
+                  "12": 45,
+                  "13": 70,
+                  "14": 30,
+                  "15": 222,
+                  "16": 133,
+                  "17": 25,
+                  "18": 38,
+                  "19": 247,
+                  "20": 43,
+                  "21": 167,
+                  "22": 68,
+                  "23": 135,
+                  "24": 88,
+                  "25": 27,
+                  "26": 53,
+                  "27": 199,
+                  "28": 209,
+                  "29": 168,
+                  "30": 141,
+                  "31": 108
+                },
+                "productHeaderImageRejected": false,
+                "lastPlaybackProgress": 0,
+                "isDynamicReplyButtonsMsg": false,
+                "isCarouselCard": false,
+                "parentMsgId": null,
+                "callSilenceReason": null,
+                "isVideoCall": false,
+                "callDuration": null,
+                "callCreator": null,
+                "callParticipants": null,
+                "isCallLink": null,
+                "callLinkToken": null,
+                "isMdHistoryMsg": false,
+                "stickerSentTs": 0,
+                "isAvatar": false,
+                "lastUpdateFromServerTs": 0,
+                "invokedBotWid": null,
+                "bizBotType": null,
+                "botResponseTargetId": null,
+                "botPluginType": null,
+                "botPluginReferenceIndex": null,
+                "botPluginSearchProvider": null,
+                "botPluginSearchUrl": null,
+                "botPluginSearchQuery": null,
+                "botPluginMaybeParent": false,
+                "botReelPluginThumbnailCdnUrl": null,
+                "botMessageDisclaimerText": null,
+                "botMsgBodyType": null,
+                "reportingTokenInfo": {
+                  "reportingToken": {
+                    "0": 31,
+                    "1": 40,
+                    "2": 46,
+                    "3": 101,
+                    "4": 85,
+                    "5": 32,
+                    "6": 15,
+                    "7": 161,
+                    "8": 19,
+                    "9": 231,
+                    "10": 148,
+                    "11": 65,
+                    "12": 77,
+                    "13": 21,
+                    "14": 75,
+                    "15": 144
+                  },
+                  "version": 2,
+                  "reportingTag": {
+                    "0": 1,
+                    "1": 11,
+                    "2": 74,
+                    "3": 14,
+                    "4": 181,
+                    "5": 166,
+                    "6": 245,
+                    "7": 134,
+                    "8": 108,
+                    "9": 61,
+                    "10": 44,
+                    "11": 185,
+                    "12": 162,
+                    "13": 86,
+                    "14": 245,
+                    "15": 34,
+                    "16": 89,
+                    "17": 110,
+                    "18": 221,
+                    "19": 163
+                  }
+                },
+                "requiresDirectConnection": null,
+                "bizContentPlaceholderType": null,
+                "hostedBizEncStateMismatch": false,
+                "senderOrRecipientAccountTypeHosted": false,
+                "placeholderCreatedWhenAccountIsHosted": false,
+                "galaxyFlowDisabled": false,
+                "groupHistoryBundleMessageKey": null,
+                "groupHistoryBundleMetadata": null,
+                "links": []
+              }
+            },
+            "engine": "WEBJS",
+            "environment": {
+              "version": "2025.9.8",
+              "engine": "WEBJS",
+              "tier": "CORE",
+              "browser": "/usr/bin/chromium"
+            }
+          },
+          "webhookUrl": "https://hackaton-n8n.6dihgy.easypanel.host/webhook/waha",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "Ignorar api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ignorar api": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Ignorar grupos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ignorar grupos": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Tem mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Seen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Seen": {
+      "main": [
+        [
+          {
+            "node": "Start Typing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Typing": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem mídia": {
+      "main": [
+        [
+          {
+            "node": "Set text message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dados da mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set text message": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dados da mídia": {
+      "main": [
+        [
+          {
+            "node": "Tipo de mídia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tipo de mídia": {
+      "main": [
+        [
+          {
+            "node": "Baixar aúdio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Baixar imagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar aúdio": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording": {
+      "main": [
+        [
+          {
+            "node": "Set Audio Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Audio Message": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar imagem": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Set Image Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Image Message": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preencher planilha de análise": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c3734a7a-5727-46ac-ab4e-804d4534df63",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bae7fc7da8e884f413582df0b52ffa7a336392d0c6d14867d2c51da5c3d6da51"
+  },
+  "id": "TsXSWRVrb7HPdh0g",
+  "tags": []
+}
