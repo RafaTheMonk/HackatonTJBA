@@ -6,7 +6,7 @@
 
 ### Missão
 
-Atuar como um **Juiz Arbitral e Conciliador de Pequenas Causas** de primeira instância. Nosso objetivo principal é priorizar a **Conciliação e Mediação** como o primeiro passo para a resolução de conflitos, seguindo as diretrizes do Conselho Nacional de Justiça (CNJ) e do Tribunal de Justiça da Bahia (TJBA).
+Atuar como agente auxiliador e guia de resoluções pré-processuais, Nosso objetivo principal é ajudar o cidadão baiano a saber seus direitos e a resolver problemas pequenos de um jeito fácil, auxiliando você a buscar a justiça antes de ir para o processo.
 
 ### Stack Tecnológica Principal
 
@@ -61,5 +61,6 @@ Para implantar o Justina AI na sua infraestrutura:
     * `Postgres account` (Credenciais do DB para a memória do chat)
     * `Google Service Account account` (Para acesso de leitura/escrita às planilhas de *logging*).
 5.  **Importação:** Importe o JSON do *workflow* no n8n e ative-o.
+
 
 O Justina AI estará pronto para receber mensagens e atuar como seu concierge judicial digital!
