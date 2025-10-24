@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia Rápido - Justina AI Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 36px;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #64748b;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        h2 {
+            font-size: 24px;
+            color: #1e293b;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        
+        .step-content {
+            color: #64748b;
+            padding-left: 40px;
+        }
+        
+        code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .button:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        
+        .structure {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">⚖️</div>
+            <h1>Guia Rápido de Uso</h1>
+            <p class="subtitle">Portal de Documentação Justina AI</p>
+        </div>
+
+        <!-- Estrutura de Arquivos -->
+        <div class="section">
+            <h2>📁 Estrutura de Arquivos</h2>
+            <div class="structure">
+outputs/<br>
+├── site/<br>
+│   ├── index.html          ← Página principal<br>
+│   ├── styles.css          ← Estilos<br>
+│   ├── script.js           ← JavaScript<br>
+│   ├── guia-rapido.html    ← Este arquivo<br>
+│   └── README.md           ← Documentação<br>
+├── Migracao_Justina_N8N_para_Java.md<br>
+├── Diagramas_Arquitetura_Justina.md<br>
+├── Exemplos_Praticos_Java_Hibernate.md<br>
+├── Analise_Tecnica_Stack_Justina.md<br>
+├── Comparacao_Codigo_3_Linguagens.md<br>
+└── deploy.sh               ← Script de deploy
+            </div>
+        </div>
+
+        <!-- Como Usar -->
+        <div class="section">
+            <h2>🚀 Como Usar</h2>
+            
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    Abrir Localmente (Mais Simples)
+                </div>
+                <div class="step-content">
+                    <p>Simplesmente dê <strong>duplo clique</strong> no arquivo <code>index.html</code></p>
+                    <p style="margin-top: 10px;">✅ Funciona imediatamente no navegador</p>
+                    <p>⚠️ Alguns recursos podem não funcionar (como carregar arquivos .md)</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    Com Servidor Local (Recomendado)
+                </div>
+                <div class="step-content">
+                    <p>Abra o terminal na pasta <code>outputs/</code> e execute:</p>
+                    <pre>python3 -m http.server 8080</pre>
+                    <p>Depois acesse: <code>http://localhost:8080/site/</code></p>
+                    <p style="margin-top: 10px;">✅ Todos os recursos funcionam</p>
+                    <p>✅ Modais carregam documentos corretamente</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    Deploy Online
+                </div>
+                <div class="step-content">
+                    <p><strong>Opção A: GitHub Pages</strong></p>
+                    <p>1. Crie repositório no GitHub</p>
+                    <p>2. Faça upload da pasta <code>outputs/</code></p>
+                    <p>3. Ative GitHub Pages nas configurações</p>
+                    
+                    <p style="margin-top: 15px;"><strong>Opção B: Netlify (Mais Fácil)</strong></p>
+                    <p>1. Acesse <a href="https://app.netlify.com/drop" target="_blank">netlify.com/drop</a></p>
+                    <p>2. Arraste a pasta <code>outputs/</code></p>
+                    <p>3. Site publicado automaticamente! 🎉</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    Usando Script de Deploy
+                </div>
+                <div class="step-content">
+                    <p>No terminal, execute:</p>
+                    <pre>cd outputs
+chmod +x deploy.sh
+./deploy.sh</pre>
+                    <p style="margin-top: 10px;">O script oferece 5 opções:</p>
+                    <p>1️⃣ Testar localmente</p>
+                    <p>2️⃣ Criar ZIP para download</p>
+                    <p>3️⃣ Deploy GitHub Pages</p>
+                    <p>4️⃣ Deploy Netlify</p>
+                    <p>5️⃣ Validar arquivos</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funcionalidades -->
+        <div class="section">
+            <h2>✨ Funcionalidades do Portal</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">📚</div>
+                    <strong>5 Documentos</strong>
+                    <p style="font-size: 14px; color: #64748b; margin-top: 5px;">Completos e detalhados</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🪟</div>
+                    <strong>Modais</strong>
+                    <p style="font-size: 14px; color: #64748b; margin-top: 5px;">Visualização rápida</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⬇️</div>
+                    <strong>Downloads</strong>
+                    <p style="font-size: 14px; color: #64748b; margin-top: 5px;">Individual ou completo</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <strong>Responsivo</strong>
+                    <p style="font-size: 14px; color: #64748b; margin-top: 5px;">Mobile-friendly</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problemas Comuns -->
+        <div class="section">
+            <h2>🐛 Problemas Comuns</h2>
+            
+            <div class="warning">
+                <strong>⚠️ Modais não carregam documentos</strong>
+                <p style="margin-top: 10px;">
+                    <strong>Causa:</strong> Navegador bloqueia carregamento de arquivos locais<br>
+                    <strong>Solução:</strong> Use um servidor local (passo 2 acima)
+                </p>
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ Estilos não aparecem</strong>
+                <p style="margin-top: 10px;">
+                    <strong>Causa:</strong> Caminhos dos arquivos incorretos<br>
+                    <strong>Solução:</strong> Verifique se <code>styles.css</code> está no mesmo diretório que <code>index.html</code>
+                </p>
+            </div>
+
+            <div class="success">
+                <strong>✅ Tudo funcionando?</strong>
+                <p style="margin-top: 10px;">
+                    Você deve conseguir:<br>
+                    • Clicar nos cards e abrir modais<br>
+                    • Ver documentos formatados<br>
+                    • Fazer download dos arquivos<br>
+                    • Navegar pelo site no mobile
+                </p>
+            </div>
+        </div>
+
+        <!-- Requisitos -->
+        <div class="section">
+            <h2>💻 Requisitos</h2>
+            <ul style="padding-left: 20px; color: #64748b;">
+                <li style="margin-bottom: 8px;">Navegador moderno (Chrome, Firefox, Safari, Edge)</li>
+                <li style="margin-bottom: 8px;">JavaScript habilitado</li>
+                <li style="margin-bottom: 8px;">Conexão com internet (para Marked.js via CDN)</li>
+                <li style="margin-bottom: 8px;">Python 3 ou Node.js (opcional, para servidor local)</li>
+            </ul>
+        </div>
+
+        <!-- Customização -->
+        <div class="section">
+            <h2>🎨 Customização Rápida</h2>
+            
+            <p style="margin-bottom: 15px;"><strong>Mudar cores:</strong></p>
+            <p>Edite o arquivo <code>styles.css</code> e altere as variáveis:</p>
+            <pre>:root {
+    --primary: #2563eb;     /* Azul */
+    --secondary: #10b981;   /* Verde */
+    --accent: #f59e0b;      /* Laranja */
+}</pre>
+
+            <p style="margin-top: 20px; margin-bottom: 15px;"><strong>Adicionar documento:</strong></p>
+            <p>No arquivo <code>script.js</code>, adicione:</p>
+            <pre>const documents = {
+    // ... existentes
+    doc6: {
+        title: 'Novo Doc',
+        file: 'Novo_Doc.md',
+        description: 'Descrição'
+    }
+};</pre>
+        </div>
+
+        <!-- Próximos Passos -->
+        <div class="section">
+            <h2>🎯 Próximos Passos</h2>
+            <ol style="padding-left: 20px; color: #64748b;">
+                <li style="margin-bottom: 8px;"><strong>Teste localmente</strong> primeiro</li>
+                <li style="margin-bottom: 8px;"><strong>Customize</strong> cores e informações</li>
+                <li style="margin-bottom: 8px;"><strong>Faça deploy</strong> online</li>
+                <li style="margin-bottom: 8px;"><strong>Compartilhe</strong> com sua equipe</li>
+            </ol>
+
+            <a href="index.html" class="button">🚀 Abrir Portal Agora</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Desenvolvido por Rafael Brito</strong></p>
+            <p>Equipe Bit Bashing • Tribunal de Justiça da Bahia</p>
+            <p style="margin-top: 10px; font-size: 14px;">Outubro 2025 • Versão 1.0.0</p>
+        </div>
+    </div>
+</body>
+</html>
