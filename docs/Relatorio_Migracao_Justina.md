@@ -1,187 +1,77 @@
-# Relatório Técnico e Financeiro
-## Migração da Plataforma Justina AI de n8n para Java
+RELATÓRIO TÉCNICO E FINANCEIRO
+Migração da Plataforma Justina AI de n8n para Java
 
-**Solicitante:** Product Owners TJBA  \
-**Preparado por:** Rafael Brito – Equipe Bit Bashing  \
-**Data:** 03 de novembro de 2025
+Solicitante: Product Owners TJBA
+Preparado por: Rafael Brito – Equipe Bit Bashing
+Data: 03 de novembro de 2025
 
----
+SEÇÃO 1 - SUMÁRIO EXECUTIVO
+O n8n continua adequado para protótipos e automações de baixa escala, porém apresenta limite prático em torno de 120 requisições por segundo. A demanda projetada para o TJBA já em 2025 supera 500 mil mensagens por dia e exige pelo menos mil requisições sustentadas em picos. A solução em Java (Spring Boot) entrega quarenta vezes mais throughput, consome sete vezes menos memória e recupera em segundos após falhas. Manter o n8n em produção consumiria aproximadamente 176,6 mil reais por mês, enquanto a plataforma em Java opera por 35,7 mil reais mensais, produzindo economia anual de 1,69 milhão de reais. O investimento único de migração, estimado em 330 mil reais, possui payback de 2,3 meses e retorno de 513 por cento no primeiro ano.
 
-## 1. Sumário Executivo
-- O n8n permanece útil para protótipos e automações de baixa escala, mas limita-se a ~120 requisições/segundo em operação real.
-- A demanda projetada para o TJBA já em 2025 ultrapassa 500 mil mensagens/dia, exigindo pelo menos 1.000 requisições/sustentadas em picos.
-- Java (Spring Boot) entrega 40× mais throughput, 7× menos memória e retomada quase instantânea após falhas.
-- A manutenção do n8n em produção custaria ~R$ 176,6 mil/mês. Java reduz esse valor para R$ 35,7 mil/mês, gerando economia anual de R$ 1,69 milhão.
-- O investimento único de migração (R$ 330 mil) possui payback em 2,3 meses e ROI de 513% no primeiro ano.
+SEÇÃO 2 - CONTEXTO E OBJETIVO
+O documento fornece insumos técnicos e financeiros para a decisão de migrar Justina AI de n8n (Node.js) para Java (Spring Boot). Analisa desempenho, escalabilidade, custo total de propriedade, riscos operacionais, aderência ao time interno e plano de execução. A metodologia inclui experimentos em ambiente controlado, benchmarking de mercado, avaliação de custos de fornecedores como AWS e Gemini e entrevistas com as equipes do tribunal.
 
----
+SEÇÃO 3 - LIMITES ESTRUTURAIS DO N8N
+O n8n se baseia em Node.js, executando um único thread por processo. Cada workflow roda de forma sequencial, de modo que uma etapa lenta bloqueia as demais. O padrão utiliza SQLite; a versão enterprise depende de Redis e PostgreSQL com configuração delicada. Os testes mostram tempo médio de 700 a 900 milissegundos por workflow, limitando o throughput por worker. Cada instância suporta apenas um worker, forçando escala horizontal. Com quarenta containers m7i.xlarge, o throughput estável ficou entre 110 e 130 requisições por segundo; acima disso a fila cresce rapidamente. O consumo de memória por worker varia entre 0,8 e 1,2 gigabyte, provocando travamentos acima de 32 gigabytes totais. A recuperação após falha leva de seis a dez minutos, causando perda de conversas em andamento. Sob picos de mil usuários simultâneos, há filas superiores a oito minutos e timeouts de API. Bloqueios de escrita no banco geram perda de histórico e mensagens duplicadas. A interface visual expõe credenciais e lógica sensível, com auditoria limitada.
 
-## 2. Contexto e Objetivo
-- **Objetivo do documento:** oferecer insumos técnicos e financeiros para a decisão de migrar Justina AI de n8n (Node.js) para Java (Spring Boot).
-- **Escopo analisado:** desempenho, escalabilidade, custo total de propriedade (TCO), riscos operacionais, aderência à equipe interna e roadmap de migração.
-- **Metodologia:** medições em ambiente controlado (experimentos práticos), benchmarking de mercado, análise de custos de fornecedores (AWS, Gemini, licenças), entrevistas com equipe do TJBA.
+SEÇÃO 4 - CAPACIDADE NECESSÁRIA PARA O TJBA
+As projeções indicam dez mil usuários por dia no mês três, cinquenta mil no mês seis, duzentos mil no mês doze e quinhentos mil no segundo ano. Considerando cinco mensagens por atendimento, isso representa cinquenta mil a dois milhões e meio de mensagens diárias. Os picos projetados são de trinta e cinco requisições por segundo no mês três, noventa no mês seis, duzentos e oitenta no mês doze e setecentos e vinte no ano dois. Mutirões de conciliação, eleições internas e anúncios judiciais podem multiplicar a carga por dez, alcançando mil e quatrocentas requisições por segundo. É necessário um SLA de até dois segundos para noventa e cinco por cento das requisições e taxa de erro abaixo de zero vírgula um por cento.
 
----
+SEÇÃO 5 - EXPERIMENTOS PRÁTICOS
+Os testes replicaram o fluxo do Justina com consulta Oracle, chamada Gemini, processamento de linguagem e gravação de histórico. O hardware utilizado tinha dezesseis vCPUs e trinta e dois gigabytes de RAM em ambos ambientes. A carga foi aplicada com autocannon para Node.js e com ab (ApacheBench) para Java. O n8n apresentou vinte e duas a vinte e oito requisições por segundo, latência no percentil noventa e cinco de três mil e cem milissegundos e erros entre cinco e dez por cento. O consumo de memória atingiu oito vírgula quatro gigabytes e a CPU ficou em cem por cento de um núcleo. A aplicação Java sustentou oitocentas a mil requisições por segundo, latência de cento e quarenta milissegundos no percentil noventa e cinco, erros abaixo de zero vírgula um por cento, consumo de um vírgula dois gigabyte e uso de sessenta e cinco por cento em dezesseis núcleos. Isso representa ganho de quarenta vezes em throughput e noventa e cinco por cento de redução na latência. Os scripts utilizados encontram-se em docs/scripts/server-node.js e docs/scripts/LoadController.java, reproduzindo os comportamentos sob carga.
 
-## 3. Limites Estruturais do n8n
-### 3.1 Arquitetura
-- Baseado em Node.js, com execução single-thread por processo.
-- Processamento sequencial de ações dentro do workflow; uma tarefa lenta impacta toda a fila.
-- Padrão utiliza SQLite; versões enterprise exigem Redis + PostgreSQL com configuração complexa.
+Código Node.js para o teste de carga:
+```
+const fastify = require('fastify')();
+fastify.post('/webhook', async () => {
+  await new Promise(r => setTimeout(r, 120));
+  let acc = 0;
+  for (let i = 0; i < 1e6; i++) acc += Math.sqrt(i);
+  return { ok: true, acc };
+});
+fastify.listen({ port: 3000 });
+```
 
-### 3.2 Gargalos Mensuráveis
-| Parâmetro | Observado | Impacto |
-|-----------|-----------|---------|
-| Tempo médio de execução de workflow | 700–900 ms | Limita throughput individual dos workers |
-| Workers por instância | 1 | Necessidade de escalar horizontalmente |
-| Throughput sustentado (40 containers m7i.xlarge) | 110–130 req/s | Fila cresce exponencialmente acima disso |
-| Uso de memória por worker | 0,8–1,2 GB | Crash acima de 32 GB totais |
-| Tempo de recuperação após falha | 6–10 min | Conversas em andamento perdidas |
+Código Java equivalente para o teste de carga:
+```
+@RestController
+class LoadController {
+  private final Executor executor = Executors.newFixedThreadPool(16);
 
-### 3.3 Riscos Operacionais
-- **Sobrecarga:** picos de 1.000 usuários simultâneos geram fila >8 minutos e timeouts de API.
-- **Persistência:** bloqueio de escrita no banco causa perda de histórico e duplicidade de mensagens.
-- **Segurança:** exposição de credenciais e lógica sensível na interface visual; auditoria limitada.
+  @PostMapping("/webhook")
+  public CompletableFuture<Map<String, Object>> webhook() {
+    return CompletableFuture.supplyAsync(() -> {
+      try {
+        Thread.sleep(120);
+      } catch (InterruptedException ignored) {}
+      double acc = 0;
+      for (int i = 0; i < 1_000_000; i++) acc += Math.sqrt(i);
+      return Map.of("ok", true, "acc", acc);
+    }, executor);
+  }
+}
+```
 
----
+SEÇÃO 6 - ANÁLISE FINANCEIRA ATUALIZADA (NOVEMBRO 2025)
+Manter o n8n em produção exige quatro instâncias AWS EC2 m7i.2xlarge com custo mensal de dezesseis mil e oitocentos reais, RDS PostgreSQL r6g.xlarge por quatro mil e duzentos reais, ElastiCache Redis por três mil e oitocentos reais, balanceador e CDN por dois mil reais, licença n8n Enterprise Scale por quarenta e nove mil reais, consultoria especializada por trinta e dois mil reais, equipe DevOps e SRE dedicada por vinte e um mil reais e monitoramento extra por oito mil e seiscentos reais. O total mensal chega a cento e setenta e seis mil e seiscentos reais, equivalente a 2,12 milhões de reais anuais. A operação em Java utiliza cluster Kubernetes on-prem aliado a duas instâncias m7i.large (três mil e setecentos reais), balanceador (quinhentos reais), observabilidade com Prometheus e Grafana (quinhentos reais), API Gemini (vinte e oito mil reais), instância WAHA (três mil reais) e equipe interna sem custo adicional. O total mensal é trinta e cinco mil e setecentos reais, ou 428,4 mil reais anuais. A economia mensal de cento e quarenta mil e novecentos reais gera economia anual de 1,69 milhão de reais. O investimento de migração de 330 mil reais retorna em 2,3 meses e produz ROI de 513 por cento em doze meses.
 
-## 4. Capacidade Necessária para o TJBA
-### 4.1 Projeção de Demanda (2025–2027)
-| Marco | Usuários/dia | Mensagens/dia (×5) | Requisições/s pico |
-|-------|--------------|--------------------|--------------------|
-| Mês 3 | 10.000 | 50.000 | 35 |
-| Mês 6 | 50.000 | 250.000 | 90 |
-| Mês 12 | 200.000 | 1.000.000 | 280 |
-| Ano 2 | 500.000 | 2.500.000 | 720 |
+SEÇÃO 7 - ADERÊNCIA AO TIME E GOVERNANÇA
+O TJBA dispõe de quinze desenvolvedores Java seniores e oito DBAs Oracle prontos para atuar. Para manter o n8n seriam necessários treinamentos externos para quatorze pessoas, orçados em quinhentos mil reais. As práticas de CI/CD, monitoração, APM e segurança em Java já estão homologadas pelo tribunal, reduzindo riscos e tempo de implantação.
 
-### 4.2 Eventos Especiais
-- Mutirões de conciliação, eleições internas e anúncios judiciais podem multiplicar a carga em 10× (até 1.400 req/s).
-- Necessidade de SLA ≤ 2 s para 95% das requisições, com tolerância máxima de 0,1% de erro.
+SEÇÃO 8 - ROADMAP DE MIGRAÇÃO (QUATRO MESES)
+Mês um: aprovação formal, alocação da equipe, preparação do repositório e dos pipelines, definição de arquitetura detalhada. Mês dois: tradução dos workflows para serviços Java, integração com Oracle, implementação de testes unitários. Mês três: testes integrados, ajustes de performance, criação de dashboards de observabilidade. Mês quatro: testes de carga com dez mil usuários simultâneos, ajustes finais, documentação e aprovação para produção. Mês cinco (fase de estabilização): go-live com um por cento da base, monitoramento contínuo e escalonamento gradual até cem por cento em trinta dias.
 
----
+SEÇÃO 9 - MATRIZ DE DECISÃO
+A avaliação ponderada atribui peso de trinta por cento para performance, vinte e cinco por cento para escalabilidade, vinte por cento para custo total, quinze por cento para manutenibilidade e dez por cento para segurança. O n8n recebeu notas: performance dois, escalabilidade três, custo total dois, manutenibilidade cinco, segurança quatro. Java obteve dez, dez, nove, nove e dez respectivamente. A pontuação final ficou em três pontos para n8n e nove vírgula sete para Java, confirmando superioridade da migração.
 
-## 5. Experimentos Práticos
-### 5.1 Setup dos Testes
-- Workload sintético replicando fluxo do Justina: consulta Oracle, chamada Gemini, processamento de linguagem, gravação de histórico.
-- Hardware: servidores equivalentes (16 vCPU, 32 GB RAM para ambos).
-- Ferramenta de carga: `autocannon` (Node.js) e `ab` (ApacheBench).
+SEÇÃO 10 - PERGUNTAS FREQUENTES
+Por que não reforçar apenas a infraestrutura do n8n? Mesmo com quarenta containers, o throughput não supera cento e vinte requisições por segundo devido ao modelo single-thread. Consultoria especializada não resolve o limite arquitetural; custaria cerca de quinhentos mil reais por ano e entregaria no máximo duzentas requisições por segundo. Por que Java e não Python ou JavaScript? O TJBA domina Java e já possui infraestrutura homologada, evitando custos de ramp-up e futuros retrabalhos. E se a demanda crescer menos? Com metade da projeção, o n8n ainda satura, enquanto Java operaria a cinco por cento da capacidade. Há referências em Java? PIX, Receita Federal (e-CAC), Tribunal Superior Eleitoral e SUS Digital utilizam Java para sistemas críticos com requisitos semelhantes.
 
-### 5.2 Resultados Comparativos
-| Métrica | n8n / Node.js | Java Spring Boot | Diferença |
-|---------|---------------|------------------|-----------|
-| Requisições/segundo | 22–28 | 820–1.000 | ×40 |
-| Latência P95 | 3.100 ms | 140 ms | −95% |
-| Erros sob carga | 5–10% | <0,1% | −99% |
-| Memória utilizada | 8,4 GB | 1,2 GB | −86% |
-| CPU utilizada | 1 core (100%) | 16 cores (65%) | Melhor aproveitamento |
+SEÇÃO 11 - RECOMENDAÇÃO FINAL
+Aprovar de imediato a migração de Justina AI para Java. Aplicar o investimento de 330 mil reais em quatro meses, reaproveitando a equipe interna. Garantir economia anual de 1,69 milhão de reais e eliminar risco de interrupções em mutirões ou eventos críticos. Manter o n8n apenas para protótipos e automações departamentais de baixo volume. Mensagem central aos Product Owners: O n8n é a Ferrari do protótipo; o Java é o ônibus que leva a Bahia inteira. Para atender 14,9 milhões de cidadãos com segurança e custo controlado, a migração precisa iniciar agora.
 
-### 5.3 Scripts de Referência
-- `docs/scripts/server-node.js` – baseline equivalente ao worker do n8n.
-- `docs/scripts/LoadController.java` – implementação Spring Boot com pool de threads.
-- Scripts demonstram o comportamento divergente sob carga realista.
+SEÇÃO 12 - PRÓXIMOS PASSOS
+Aprovar o investimento e o roadmap na semana zero. Realizar o kick-off com as equipes de desenvolvimento e infraestrutura na semana um. Implantar ambientes, pipelines e observabilidade na semana dois. Iniciar desenvolvimento em Java com metas quinzenais na semana três. Agendar demonstrações mensais aos Product Owners com indicadores de avanço.
 
----
-
-## 6. Análise Financeira Atualizada (Nov/2025)
-### 6.1 Custos com n8n em Produção
-| Item | Valor mensal (R$) | Comentário |
-|------|-------------------|------------|
-| AWS EC2 (4× m7i.2xlarge) | 16.800 | Necessários para 40 workers |
-| RDS PostgreSQL r6g.xlarge | 4.200 | Persistência de historico |
-| ElastiCache Redis | 3.800 | Filas do modo queue |
-| Elastic Load Balancer + CDN | 2.000 | Distribuição de tráfego |
-| Licença n8n Enterprise (Scale) | 49.000 | 100k exec/dia, suporte 24×7 |
-| Suporte especializado externo | 32.000 | 2 consultores n8n |
-| DevOps/SRE dedicados | 21.000 | 2 colaboradores internos |
-| Monitoramento extra (Datadog, backups) | 8.600 | Logs, alertas, DR |
-| **Total mensal** | **176.600** | **R$ 2,12 milhões/ano** |
-
-### 6.2 Custos com Java em Produção
-| Item | Valor mensal (R$) | Comentário |
-|------|-------------------|------------|
-| Cluster Kubernetes (on-prem + 2× m7i.large) | 3.700 | Alta disponibilidade |
-| Load balancer | 500 | NGINX/ALB |
-| Observabilidade (Prometheus + Grafana) | 500 | Reaproveita stack atual |
-| API Gemini (100k atendimentos/dia) | 28.000 | Mesma necessidade em ambos cenários |
-| WAHA (WhatsApp) | 3.000 | Única instância |
-| Equipe Java interna | 0 | Reaproveitamento completo |
-| **Total mensal** | **35.700** | **R$ 428.400/ano** |
-
-### 6.3 Indicadores Financeiros
-- **Economia mensal:** R$ 140.900.
-- **Economia anual:** R$ 1.690.800.
-- **Investimento de migração:** R$ 330.000.
-- **Payback:** 2,3 meses.
-- **ROI 12 meses:** 513%.
-
----
-
-## 7. Aderência ao Time e Governança
-- TJBA conta hoje com 15 desenvolvedores Java seniors e 8 DBAs Oracle prontos para atuar.
-- Para n8n/node.js seria necessário treinamento externo para 14 pessoas (R$ 500 mil estimados).
-- Java possui pipeline de CI/CD, monitoração, APM e padrões de segurança já aprovados pelo tribunal.
-
----
-
-## 8. Roadmap de Migração Proposto (4 meses)
-| Mês | Entregas principais |
-|-----|---------------------|
-| 1 – Preparação | Aprovação formal; alocação da equipe; setup do repositório e pipelines; arquitetura detalhada |
-| 2 – Desenvolvimento | Tradução de workflows para serviços Java; integração com Oracle; implementação de testes unitários |
-| 3 – Desenvolvimento | Testes integrados; ajustes de performance; criação de dashboards de observabilidade |
-| 4 – Homologação | Testes de carga (10k usuários simultâneos); ajustes finais; documentação; aprovação de produção |
-| 5 – Produção | Go-live com 1% da base; monitoramento 24×7; escalonamento progressivo até 100% em 30 dias |
-
----
-
-## 9. Matriz de Decisão
-| Critério | Peso | n8n | Java | Vencedor |
-|----------|------|-----|------|----------|
-| Performance | 30% | 2/10 | 10/10 | Java |
-| Escalabilidade | 25% | 3/10 | 10/10 | Java |
-| Custo Total | 20% | 2/10 | 9/10 | Java |
-| Manutenibilidade | 15% | 5/10 | 9/10 | Java |
-| Segurança | 10% | 4/10 | 10/10 | Java |
-| **Pontuação total** | 100% | **3,0** | **9,7** | **Java** |
-
----
-
-## 10. Perguntas Frequentes dos POs
-- **Por que não manter o n8n e apenas reforçar infraestrutura?**  
-  Mesmo com escala horizontal agressiva (40 containers), o throughput não passa de 120 req/s; gargalo estrutural do Node.js single-thread.
-- **Podemos contratar consultoria n8n?**  
-  Custo estimado R$ 500 mil/ano. Ainda assim, o limite teórico é ~200 req/s — insuficiente para a Bahia.
-- **Por que Java em vez de Python ou JavaScript?**  
-  Equipe interna dominando Java, infraestrutura já homologada, frameworks maduros. Evita custo de ramp-up e risco de refator posterior.
-- **E se a demanda crescer menos?**  
-  Mesmo com 50% da projeção (250 mil mensagens/dia), o n8n continua saturado; Java operaria a 5% da capacidade.
-- **Há casos de uso similares em Java?**  
-  PIX, Receita Federal (e-CAC), TSE e SUS Digital — todos com requisitos de escala e disponibilidade comparáveis.
-
----
-
-## 11. Recomendação Final
-- Aprovar imediatamente a migração de Justina AI para Java.
-- Investir R$ 330 mil em um projeto de 4 meses, reutilizando equipe interna.
-- Garantir economia anual de R$ 1,69 milhão e eliminar risco de colapso durante mutirões e eventos críticos.
-- Manter o n8n exclusivamente para protótipos e automações departamentais de baixa carga.
-
-**Mensagem-chave para os POs:**  
-> “O n8n é a Ferrari do protótipo; o Java é o ônibus que leva a Bahia inteira. Para atender 14,9 milhões de cidadãos com segurança e custo-controlado, precisamos migrar agora.”
-
----
-
-## 12. Próximos Passos
-1. Aprovação formal do investimento e do roadmap (Semana 0).
-2. Kick-off com equipe de desenvolvimento e infraestrutura (Semana 1).
-3. Implantação do ambiente de desenvolvimento, pipelines e observabilidade (Semana 2).
-4. Início do desenvolvimento em Java com metas quinzenais (Semana 3).
-5. Agendamento de demonstrações mensais aos POs com indicadores de avanço.
-
----
-
-## 13. Anexos
-- Scripts dos experimentos de carga (Node.js e Java).
-- Planilha de custos detalhada (Kazien Finance – Nov/2025).
-- Relatórios de monitoramento do protótipo atual.
-
+SEÇÃO 13 - ANEXOS
+Scripts dos experimentos de carga (Node.js e Java). Planilha de custos detalhada, referência Kazien Finance novembro de 2025. Relatórios de monitoramento do protótipo atual.
