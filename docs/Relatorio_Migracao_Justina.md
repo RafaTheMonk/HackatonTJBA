@@ -73,5 +73,20 @@ Aprovar de imediato a migração de Justina AI para Java. Aplicar o investimento
 SEÇÃO 12 - PRÓXIMOS PASSOS
 Aprovar o investimento e o roadmap na semana zero. Realizar o kick-off com as equipes de desenvolvimento e infraestrutura na semana um. Implantar ambientes, pipelines e observabilidade na semana dois. Iniciar desenvolvimento em Java com metas quinzenais na semana três. Agendar demonstrações mensais aos Product Owners com indicadores de avanço.
 
-SEÇÃO 13 - ANEXOS
+SEÇÃO 13 - PERGUNTAS DE IMPLEMENTAÇÃO PARA ALINHAMENTO COM PRODUCT OWNERS
+Pergunta esperada: Como será garantida a continuidade do serviço durante a transição? Resposta sugerida: O plano prevê execução em paralelo, com o n8n atendendo produção enquanto o Java evolui em ambiente isolado. A virada ocorre após testes de carga e monitoração paralela, com rollback automático se necessário.
+
+Pergunta esperada: Qual o impacto para as integrações existentes com Oracle e sistemas internos? Resposta sugerida: Todas as integrações são mantidas. A equipe Java já opera com Oracle, e os conectores serão reescritos como serviços REST padronizados. Testes integrados garantem compatibilidade antes do go-live.
+
+Pergunta esperada: Como serão controlados custos de API Gemini e WhatsApp durante o período de transição? Resposta sugerida: O uso permanecerá igual, pois tanto o protótipo quanto a nova solução consomem as mesmas APIs. O monitoramento de consumo será centralizado no observability stack, evitando duplicidade de chamadas.
+
+Pergunta esperada: Haverá necessidade de treinamento adicional para a equipe TJBA? Resposta sugerida: A equipe atual já domina Java e Oracle. O plano inclui workshops rápidos sobre a nova arquitetura e ferramentas de observabilidade para garantir alinhamento.
+
+Pergunta esperada: Quais métricas indicarão que a migração está concluída com sucesso? Resposta sugerida: Throughput sustentado acima de 1.000 requisições por segundo, latência P95 abaixo de 200 milissegundos, erro menor que 0,1 por cento, cobertura de testes acima de 80 por cento e aprovação dos usuários piloto.
+
+Pergunta esperada: Como o time responderá a incidentes após a migração? Resposta sugerida: Será ativado um runbook com suporte 24x7 nas primeiras quatro semanas, dashboards em tempo real e alertas automáticos. O rollback para o n8n permanecerá disponível durante o período de estabilização.
+
+Pergunta esperada: Quais são os marcos de validação com os Product Owners? Resposta sugerida: Reuniões quinzenais com demonstração de progresso, revisão de métricas de teste, validação de jornadas críticas e aprovação formal antes de avançar para a etapa seguinte.
+
+SEÇÃO 14 - ANEXOS
 Scripts dos experimentos de carga (Node.js e Java). Planilha de custos detalhada, referência Kazien Finance novembro de 2025. Relatórios de monitoramento do protótipo atual.
